@@ -1,7 +1,7 @@
 import scrapy
 import requests
 from ..items import D4NotifyItem
-from datetime import datetime
+import datetime
 
 
 class D4spiderSpider(scrapy.Spider):
@@ -22,7 +22,7 @@ class D4spiderSpider(scrapy.Spider):
         # self.log("event = "+item['d4event'])
         item['d4boss']=response.css('body > div.page > div > div.row.row-cols-1.row-cols-lg-3 > div:nth-child(2) > div > div.collapse.show > div > div:nth-child(2)::text').get()
         unixtime=response.css('body > div.page > div > div.row.row-cols-1.row-cols-lg-3 > div:nth-child(2) > div > div.collapse.show > div > div:nth-child(1)::attr(data-displaytime)').get()
-        item['takePlace'] = datetime.fromtimestamp(int(unixtime)).strftime('%Y-%m-%d %H:%M:%S')
+        item['takePlace'] = datetime.datetime.fromtimestamp(int(unixtime),datetime.timezone(datetime.timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S')
         msg = item['d4event']+ " : "+item['d4boss'] +" 將在 " + item['takePlace'] +  "出現"
         self.lineNotifyMessage(msg)
         # item['takePlace']=response.xpath('//html/body/div[2]/div/div[2]/div[2]/div/div[2]/div/div[1]/@data-displaytime').get()
