@@ -9,4 +9,7 @@ import scrapy
 class D4NotifyItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
-    pass
+    d4event = scrapy.Field()
+    d4boss = scrapy.Field()
+    takePlace = scrapy.Field()
+    # pass
