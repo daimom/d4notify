@@ -18,13 +18,14 @@ class D4spiderSpider(scrapy.Spider):
     def parse_time(self,response):
         item = D4NotifyItem()
         # item['d4event']=response.xpath('//h4/div/text()').extract_first()
-        item['d4event']=response.css('body > div.page > div > div.row.row-cols-1.row-cols-lg-3 > div:nth-child(2) > div > div.card-header::text').get()
+        item['d4event']=response.css('body > div.page > div > div.row.row-cols-1.row-cols-lg-4.g-2 > div:nth-child(2) > div > div.card-header::text').get()
         # self.log("event = "+item['d4event'])
-        item['d4boss']=response.css('body > div.page > div > div.row.row-cols-1.row-cols-lg-3 > div:nth-child(2) > div > div.collapse.show > div > div:nth-child(2)::text').get()
-        unixtime=response.css('body > div.page > div > div.row.row-cols-1.row-cols-lg-3 > div:nth-child(2) > div > div.collapse.show > div > div:nth-child(1)::attr(data-displaytime)').get()
+        item['d4boss']=response.css('div.collapse.show>div>div:nth-child(2)::text').get()
+        unixtime=response.css('div.collapse.show>div>div:nth-child(1)::attr(data-displaytime)').get()
         item['takePlace'] = datetime.datetime.fromtimestamp(int(unixtime),datetime.timezone(datetime.timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S')
         msg = item['d4event']+ " : "+item['d4boss'] +" 將在 " + item['takePlace'] +  "出現"
         self.lineNotifyMessage(msg)
+        r = requests.get("http://timer/line/boss?boss="+item['d4boss']+"&unixtime="+unixtime)
         # item['takePlace']=response.xpath('//html/body/div[2]/div/div[2]/div[2]/div/div[2]/div/div[1]/@data-displaytime').get()
         # self.log("發生時間="+item['takePlace'])
 
@@ -38,4 +39,5 @@ class D4spiderSpider(scrapy.Spider):
 
       payload = {'message': msg}
       r = requests.post("https://notify-api.line.me/api/notify", headers = headers, params = payload)
+
       return r.status_code
